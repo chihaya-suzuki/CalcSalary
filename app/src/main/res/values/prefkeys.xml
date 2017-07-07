@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Preferencesのkey -->
+    <string name="month_salary" translatable="false">month.salary</string>
+    <string name="work_start_time" translatable="false">work.start.time</string>
+    <string name="work_end_time" translatable="false">work.end.time</string>
+</resources>

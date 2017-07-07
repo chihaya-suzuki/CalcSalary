@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="勤怠情報登録">
+        <EditTextPreference
+            android:key="@string/month_salary"
+            android:title="@string/setting_month_salary"
+            android:dialogTitle="@string/setting_month_salary_title"
+            android:inputType="number"/>
+        <EditTextPreference
+            android:key="@string/work_start_time"
+            android:title="@string/setting_work_start_time"
+            android:dialogTitle="@string/setting_work_start_time_title"
+            android:maxLength="@integer/work_time_max_length"
+            android:inputType="number"/>
+        <EditTextPreference
+            android:key="@string/work_end_time"
+            android:title="@string/setting_work_end_time"
+            android:dialogTitle="@string/setting_work_end_time_title"
+            android:maxLength="@integer/work_time_max_length"
+            android:inputType="number"/>
+    </PreferenceCategory>
+</PreferenceScreen>
