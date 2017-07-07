@@ -21,8 +21,7 @@ public class SettingActivity extends AppCompatActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }
-
-        setResult(RESULT_CANCELED);
+//        setResult(RESULT_CANCELED);
     }
 
     @Override
@@ -37,6 +36,6 @@ public class SettingActivity extends AppCompatActivity
 
     @Override
     public void onSettingChanged() {
-        setResult(RESULT_OK);
+//        setResult(RESULT_OK);
     }
 }
