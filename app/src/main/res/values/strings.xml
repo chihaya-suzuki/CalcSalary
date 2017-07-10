@@ -7,4 +7,5 @@
     <string name="setting_work_start_time_title">勤務開始時間を入力</string>
     <string name="setting_work_end_time">勤務終了時間</string>
     <string name="setting_work_end_time_title">勤務終了時間を入力</string>
+    <string name="over_time_work">残業中</string>
 </resources>
