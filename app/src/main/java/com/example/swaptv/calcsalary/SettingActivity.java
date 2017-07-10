@@ -1,6 +1,6 @@
 package com.example.swaptv.calcsalary;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -16,7 +16,9 @@ public class SettingActivity extends AppCompatActivity
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new SettingFragment()).commit();
 
-        ActionBar actionBar = getActionBar();
+        // getActionBar()だとnullが返ってきてしまう
+        // getSupportActionBar()の戻り値はandroid.support.v7.app.ActionBar型
+        ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
