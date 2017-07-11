@@ -74,8 +74,6 @@ private long mOverTimeDiff;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // !!! ここは期待通りに動いていない !!!
-        // !!! 設定ボタンのアイコンが表示されない !!!
         getMenuInflater().inflate(R.menu.menu_app, menu);
         return true;
     }
