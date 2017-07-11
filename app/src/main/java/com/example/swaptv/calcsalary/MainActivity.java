@@ -38,8 +38,6 @@ private long mOverTimeDiff;
 
         // 給与表示View
         mResultView = (TextView)findViewById(R.id.resultView);
-        // ボタンリスナー登録
-        findViewById(R.id.sampleButton).setOnClickListener(this);
         // 残業中チェックボックス
         mOverTimeCheckBox = (CheckBox)findViewById(R.id.overTimeCheckBox);
         mOverTimeCheckBox.setOnClickListener(this);
@@ -62,11 +60,6 @@ private long mOverTimeDiff;
     public void onClick(View v) {
         int id = v.getId();
         switch(id) {
-            case R.id.sampleButton:
-                // 設定画面遷移
-                Intent intent = new Intent(this, SettingActivity.class);
-                startActivity(intent);
-                break;
             case R.id.overTimeCheckBox:
                 if(mOverTimeCheckBox.isChecked())
                     // 残業中なら赤文字

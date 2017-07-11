@@ -26,23 +26,13 @@
         tools:layout_editor_absoluteY="141dp"
         tools:layout_editor_absoluteX="42dp" />
 
-    <Button
-        android:id="@+id/sampleButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
-        android:text="設定"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <TextView
         android:id="@+id/headerView"
         android:layout_width="250dp"
         android:layout_height="47dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="120dp"
         android:gravity="center"
         android:text="あなたは本日"
         android:textSize="36sp"
@@ -51,8 +41,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteY="67dp"
-        tools:layout_editor_absoluteX="60dp" />
+        tools:layout_editor_absoluteX="60dp"
+        tools:layout_editor_absoluteY="67dp" />
 
     <TextView
         android:id="@+id/footerView"
