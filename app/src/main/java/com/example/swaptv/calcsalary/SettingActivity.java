@@ -7,6 +7,7 @@ import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class SettingActivity extends AppCompatActivity
         implements SettingFragment.SettingFragmentListener{
@@ -37,7 +38,7 @@ public class SettingActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSettingChanged() {
-//        setResult(RESULT_OK);
+    public void onSettingError() {
+        Toast.makeText(this, R.string.error_message, Toast.LENGTH_LONG).show();
     }
 }

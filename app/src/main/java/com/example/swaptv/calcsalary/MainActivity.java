@@ -93,11 +93,6 @@ private long mOverTimeDiff;
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     private void setResultView(String text) {
         mResultView.setText(text);
     }
@@ -184,6 +179,7 @@ private long mOverTimeDiff;
 
     // プリファレンスの値を時刻にセット
     private Calendar setCalendar(String time) {
+        time = time.replace(":","");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
         calendar.set(Calendar.MINUTE, Integer.parseInt(time.substring(2,4)));

@@ -3,6 +3,7 @@ package com.example.swaptv.calcsalary;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
@@ -12,7 +13,7 @@ public class SettingFragment extends PreferenceFragment
 
     // 変更イベントをActivityに通知する
     public interface SettingFragmentListener {
-        void onSettingChanged();
+        void onSettingError();
     }
 
     @Override
@@ -58,7 +59,7 @@ public class SettingFragment extends PreferenceFragment
 
         Preference preference = findPreference(key);
 
-        String salary = sharedPreferences.getString(key, "");
+        String salary = sharedPreferences.getString(key, "") + " 円";
         preference.setSummary(salary);
     }
 
@@ -67,7 +68,9 @@ public class SettingFragment extends PreferenceFragment
 
         Preference preference = findPreference(key);
 
-        String time = sharedPreferences.getString(key, "");
+        String hour = sharedPreferences.getString(key, "").substring(0, 2);
+        String min = sharedPreferences.getString(key, "").substring(2, 4);
+        String time = hour + ":" + min;
         preference.setSummary(time);
     }
 
@@ -76,7 +79,9 @@ public class SettingFragment extends PreferenceFragment
 
         Preference preference = findPreference(key);
 
-        String time = sharedPreferences.getString(key, "");
+        String hour = sharedPreferences.getString(key, "").substring(0, 2);
+        String min = sharedPreferences.getString(key, "").substring(2, 4);
+        String time = hour + ":" + min;
         preference.setSummary(time);
     }
 
@@ -86,21 +91,47 @@ public class SettingFragment extends PreferenceFragment
         // Activityを取得
         Activity activity = getActivity();
 
-        // ActivityがSettingFragmentListenerを実装しているのであれば、通知する
-        if (activity instanceof SettingFragmentListener) {
-            SettingFragmentListener listener = (SettingFragmentListener)activity;
-
-            // Activityに変更通知
-            listener.onSettingChanged();
-        }
-
         // サマリーに反映する
         if (activity.getString(R.string.month_salary).equals(key)) {
             setMonthSalarySummary(sharedPreferences);
-        } else if (activity.getString(R.string.work_start_time).equals(key)) {
+        } else if (activity.getString(R.string.work_start_time).equals(key) &&
+                isRightTime(key)) {
             setWorkStartTimeSummary(sharedPreferences);
-        } else if (activity.getString(R.string.work_end_time).equals(key)) {
+        } else if (activity.getString(R.string.work_end_time).equals(key) &&
+                isRightTime(key)) {
             setWorkEndTimeSummary(sharedPreferences);
         }
+    }
+
+    private boolean isRightTime(String key) {
+        // EditTextPreferenceの取得
+        EditTextPreference editTextPreference = (EditTextPreference)
+                findPreference(key);
+
+        // 入力された値を取得
+        String time = editTextPreference.getText();
+
+        // 4桁のみ許容、時間が23まで、分が59まで
+        if(time.length() != 4 || Integer.parseInt(time.substring(0, 2)) > 23 ||
+                Integer.parseInt(time.substring(2, 4)) > 59 ) {
+            // Activityを取得
+            Activity activity = getActivity();
+
+            // ActivityがSettingFragmentListenerを実装しているのであれば、トースト表示のため通知
+            if (activity instanceof SettingFragmentListener) {
+                SettingFragmentListener listener = (SettingFragmentListener) activity;
+
+                // Activityにエラー通知
+                listener.onSettingError();
+            }
+            // 前回入っていた値を取得
+            Preference preference = findPreference(key);
+            String summary = preference.getSummary().toString().replace(":", "");
+
+            // EditTextにセット
+            editTextPreference.setText(summary);
+            return false;
+        }
+        return true;
     }
 }
