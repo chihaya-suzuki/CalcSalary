@@ -3,22 +3,16 @@ package com.example.swaptv.calcsalary;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 private TextView mResultView;
@@ -111,6 +105,7 @@ private long mOverTimeDiff;
                 if(mOverTimeCheckBox.isEnabled()) {
                     mOverTimeCheckBox.setChecked(false);
                     mOverTimeCheckBox.setEnabled(false);
+                    mResultView.setTextColor(Color.BLACK);
                 }
                 // 現在給与計算
                 diff = dateTimeNow - mDateTimeFrom;
@@ -196,6 +191,11 @@ private long mOverTimeDiff;
         // 勤怠終了時間作成
         Calendar workEndCalendar = setCalendar(SettingPrefUtil.getKeyWorkEndTime(this));
         Log.d("debug", "calcTime: " + workStartCalendar);
+
+        // 日をまたぐ場合
+        if(workStartCalendar.compareTo(workEndCalendar) > 0 ) {
+            workEndCalendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
 
         // ミリ秒に変換
         mDateTimeFrom = workStartCalendar.getTimeInMillis();
