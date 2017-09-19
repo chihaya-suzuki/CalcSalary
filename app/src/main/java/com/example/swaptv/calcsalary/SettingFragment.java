@@ -11,6 +11,10 @@ import android.support.annotation.Nullable;
 public class SettingFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final String MONTH_SALARY_DEFAULT = "200000";
+    private static final String WORK_START_TIME_DEFAULT = "0900";
+    private static final String WORK_END_TIME_DEFAULT = "1800";
+
     // 変更イベントをActivityに通知する
     public interface SettingFragmentListener {
         void onSettingError();
@@ -59,7 +63,7 @@ public class SettingFragment extends PreferenceFragment
 
         Preference preference = findPreference(key);
 
-        String salary = sharedPreferences.getString(key, "") + " 円";
+        String salary = sharedPreferences.getString(key, MONTH_SALARY_DEFAULT) + " 円";
         preference.setSummary(salary);
     }
 
@@ -68,8 +72,8 @@ public class SettingFragment extends PreferenceFragment
 
         Preference preference = findPreference(key);
 
-        String hour = sharedPreferences.getString(key, "").substring(0, 2);
-        String min = sharedPreferences.getString(key, "").substring(2, 4);
+        String hour = sharedPreferences.getString(key, WORK_START_TIME_DEFAULT).substring(0, 2);
+        String min = sharedPreferences.getString(key, WORK_START_TIME_DEFAULT).substring(2, 4);
         String time = hour + ":" + min;
         preference.setSummary(time);
     }
@@ -79,8 +83,8 @@ public class SettingFragment extends PreferenceFragment
 
         Preference preference = findPreference(key);
 
-        String hour = sharedPreferences.getString(key, "").substring(0, 2);
-        String min = sharedPreferences.getString(key, "").substring(2, 4);
+        String hour = sharedPreferences.getString(key, WORK_END_TIME_DEFAULT).substring(0, 2);
+        String min = sharedPreferences.getString(key, WORK_END_TIME_DEFAULT).substring(2, 4);
         String time = hour + ":" + min;
         preference.setSummary(time);
     }

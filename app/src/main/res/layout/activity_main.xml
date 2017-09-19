@@ -7,6 +7,17 @@
     tools:context="com.example.swaptv.calcsalary.MainActivity">
 
     <TextView
+        android:id="@+id/dateView"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/resultView"
         android:layout_width="317dp"
         android:layout_height="104dp"

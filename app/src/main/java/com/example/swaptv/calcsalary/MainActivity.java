@@ -12,28 +12,34 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-private TextView mResultView;
-private CheckBox mOverTimeCheckBox;
-private Handler mHandler;
+    private TextView mResultView;
+    private TextView mDateView;
+    private CheckBox mOverTimeCheckBox;
+    private Handler mHandler;
 
-private double mMonthSalary;
-private double mMillSecSalary;
-private long mDateTimeFrom;
-private long mDateTimeTo;
-private long mOverTimeDiff;
+    private double mMonthSalary;
+    private double mMillSecSalary;
+    private long mDateTimeFrom;
+    private long mDateTimeTo;
+    private long mOverTimeDiff;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 現在日時View
+        mDateView = (TextView) findViewById(R.id.dateView);
         // 給与表示View
-        mResultView = (TextView)findViewById(R.id.resultView);
+        mResultView = (TextView) findViewById(R.id.resultView);
         // 残業中チェックボックス
-        mOverTimeCheckBox = (CheckBox)findViewById(R.id.overTimeCheckBox);
+        mOverTimeCheckBox = (CheckBox) findViewById(R.id.overTimeCheckBox);
         mOverTimeCheckBox.setOnClickListener(this);
     }
 
@@ -53,9 +59,9 @@ private long mOverTimeDiff;
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch(id) {
+        switch (id) {
             case R.id.overTimeCheckBox:
-                if(mOverTimeCheckBox.isChecked())
+                if (mOverTimeCheckBox.isChecked())
                     // 残業中なら赤文字
                     mResultView.setTextColor(Color.RED);
                 else {
@@ -102,7 +108,7 @@ private long mOverTimeDiff;
         if (mDateTimeFrom < dateTimeNow) {
             // 勤務終了時間より前か
             if (mDateTimeTo > dateTimeNow) {
-                if(mOverTimeCheckBox.isEnabled()) {
+                if (mOverTimeCheckBox.isEnabled()) {
                     mOverTimeCheckBox.setChecked(false);
                     mOverTimeCheckBox.setEnabled(false);
                     mResultView.setTextColor(Color.BLACK);
@@ -112,12 +118,12 @@ private long mOverTimeDiff;
             } else {
                 // 残業中の処理
                 // チェックボックスがDisabledならEnabledに変更
-                if(!mOverTimeCheckBox.isEnabled()) {
+                if (!mOverTimeCheckBox.isEnabled()) {
                     mOverTimeCheckBox.setEnabled(true);
                 }
                 // チェックが入っているなら残業代計算
-                if(mOverTimeCheckBox.isChecked()) {
-                    mOverTimeDiff = (long)((dateTimeNow - mDateTimeTo) * 1.25);
+                if (mOverTimeCheckBox.isChecked()) {
+                    mOverTimeDiff = (long) ((dateTimeNow - mDateTimeTo) * 1.25);
                 }
                 // 残業代追加
                 diff = mDateTimeTo - mDateTimeFrom + mOverTimeDiff;
@@ -136,9 +142,9 @@ private long mOverTimeDiff;
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         int targetMonth = calendar.get(Calendar.MONTH);
         int workDayCount = 0;
-        while(targetMonth == calendar.get(Calendar.MONTH)) {
+        while (targetMonth == calendar.get(Calendar.MONTH)) {
             int week = calendar.get(Calendar.DAY_OF_WEEK);
-            if(week > 1 && week < 7) workDayCount++;
+            if (week > 1 && week < 7) workDayCount++;
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
         return workDayCount;
@@ -160,6 +166,7 @@ private long mOverTimeDiff;
         final Runnable r = new Runnable() {
             @Override
             public void run() {
+                setDateView();
                 calcSalaryNow();
                 mHandler.postDelayed(this, 500);
             }
@@ -174,10 +181,10 @@ private long mOverTimeDiff;
 
     // プリファレンスの値を時刻にセット
     private Calendar setCalendar(String time) {
-        time = time.replace(":","");
+        time = time.replace(":", "");
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0,2)));
-        calendar.set(Calendar.MINUTE, Integer.parseInt(time.substring(2,4)));
+        calendar.set(Calendar.HOUR_OF_DAY, Integer.parseInt(time.substring(0, 2)));
+        calendar.set(Calendar.MINUTE, Integer.parseInt(time.substring(2, 4)));
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
@@ -193,12 +200,19 @@ private long mOverTimeDiff;
         Log.d("debug", "calcTime: " + workStartCalendar);
 
         // 日をまたぐ場合
-        if(workStartCalendar.compareTo(workEndCalendar) > 0 ) {
+        if (workStartCalendar.compareTo(workEndCalendar) > 0) {
             workEndCalendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
         // ミリ秒に変換
         mDateTimeFrom = workStartCalendar.getTimeInMillis();
         mDateTimeTo = workEndCalendar.getTimeInMillis();
+    }
+
+    private void setDateView() {
+        // 現在日時設定
+        final DateFormat df = new SimpleDateFormat("yyyy年MM月dd日");
+        final Date date = new Date(System.currentTimeMillis());
+        mDateView.setText(df.format(date));
     }
 }
