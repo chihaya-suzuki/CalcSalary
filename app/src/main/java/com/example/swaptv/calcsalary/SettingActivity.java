@@ -22,7 +22,6 @@ public class SettingActivity extends AppCompatActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }
-//        setResult(RESULT_CANCELED);
     }
 
     @Override
@@ -36,7 +35,12 @@ public class SettingActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSettingError() {
-        Toast.makeText(this, R.string.error_message, Toast.LENGTH_LONG).show();
+    public void onSettingTimeError() {
+        Toast.makeText(this, R.string.time_error_message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onSettingSalaryError() {
+        Toast.makeText(this, R.string.salary_error_message, Toast.LENGTH_LONG).show();
     }
 }

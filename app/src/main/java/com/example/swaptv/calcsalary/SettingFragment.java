@@ -7,6 +7,7 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 
 public class SettingFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -15,9 +16,12 @@ public class SettingFragment extends PreferenceFragment
     private static final String WORK_START_TIME_DEFAULT = "0900";
     private static final String WORK_END_TIME_DEFAULT = "1800";
 
+    private SharedPreferences mSharedPreferences;
+
     // 変更イベントをActivityに通知する
     public interface SettingFragmentListener {
-        void onSettingError();
+        void onSettingTimeError();
+        void onSettingSalaryError();
     }
 
     @Override
@@ -29,6 +33,8 @@ public class SettingFragment extends PreferenceFragment
                 SettingPrefUtil.PREF_FILE_NAME);
 
         addPreferencesFromResource(R.xml.preferences);
+
+        mSharedPreferences = getPreferenceManager().getSharedPreferences();
     }
 
     @Override
@@ -49,62 +55,108 @@ public class SettingFragment extends PreferenceFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        setSummary(getPreferenceManager().getSharedPreferences());
+        setSummary();
     }
 
-    private void setSummary(SharedPreferences sharedPreferences) {
-        setMonthSalarySummary(sharedPreferences);
-        setWorkStartTimeSummary(sharedPreferences);
-        setWorkEndTimeSummary(sharedPreferences);
+    private void setSummary() {
+        setMonthSalarySummary();
+        setWorkStartTimeSummary();
+        setWorkEndTimeSummary();
     }
 
-    private void setMonthSalarySummary(SharedPreferences sharedPreferences) {
+    private void setMonthSalarySummary() {
         String key = getActivity().getString(R.string.month_salary);
 
         Preference preference = findPreference(key);
 
-        String salary = sharedPreferences.getString(key, MONTH_SALARY_DEFAULT) + " 円";
+        String salary = mSharedPreferences.getString(key, MONTH_SALARY_DEFAULT);
         preference.setSummary(salary);
+
+        // EditTextPreferenceの取得
+        EditTextPreference editTextPreference = (EditTextPreference)
+                findPreference(key);
+
+        // EditTextにセット
+        editTextPreference.setText(salary);
+
     }
 
-    private void setWorkStartTimeSummary(SharedPreferences sharedPreferences) {
+    private void setWorkStartTimeSummary() {
         String key = getActivity().getString(R.string.work_start_time);
 
         Preference preference = findPreference(key);
 
-        String hour = sharedPreferences.getString(key, WORK_START_TIME_DEFAULT).substring(0, 2);
-        String min = sharedPreferences.getString(key, WORK_START_TIME_DEFAULT).substring(2, 4);
+        String hour = mSharedPreferences.getString(key, WORK_START_TIME_DEFAULT).substring(0, 2);
+        String min = mSharedPreferences.getString(key, WORK_START_TIME_DEFAULT).substring(2, 4);
         String time = hour + ":" + min;
         preference.setSummary(time);
+        // EditTextPreferenceの取得
+        EditTextPreference editTextPreference = (EditTextPreference)
+                findPreference(key);
+        // EditTextにセット
+        editTextPreference.setText(time.replace(":", ""));
     }
 
-    private void setWorkEndTimeSummary(SharedPreferences sharedPreferences) {
+    private void setWorkEndTimeSummary() {
         String key = getActivity().getString(R.string.work_end_time);
 
         Preference preference = findPreference(key);
 
-        String hour = sharedPreferences.getString(key, WORK_END_TIME_DEFAULT).substring(0, 2);
-        String min = sharedPreferences.getString(key, WORK_END_TIME_DEFAULT).substring(2, 4);
+        String hour = mSharedPreferences.getString(key, WORK_END_TIME_DEFAULT).substring(0, 2);
+        String min = mSharedPreferences.getString(key, WORK_END_TIME_DEFAULT).substring(2, 4);
         String time = hour + ":" + min;
         preference.setSummary(time);
+        // EditTextPreferenceの取得
+        EditTextPreference editTextPreference = (EditTextPreference)
+                findPreference(key);
+        // EditTextにセット
+        editTextPreference.setText(time.replace(":", ""));
     }
 
     @Override
-    public void onSharedPreferenceChanged(
-            SharedPreferences sharedPreferences, String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         // Activityを取得
         Activity activity = getActivity();
 
         // サマリーに反映する
-        if (activity.getString(R.string.month_salary).equals(key)) {
-            setMonthSalarySummary(sharedPreferences);
+        if (activity.getString(R.string.month_salary).equals(key) && isRightSalary(key)) {
+            setMonthSalarySummary();
         } else if (activity.getString(R.string.work_start_time).equals(key) &&
                 isRightTime(key)) {
-            setWorkStartTimeSummary(sharedPreferences);
+            setWorkStartTimeSummary();
         } else if (activity.getString(R.string.work_end_time).equals(key) &&
                 isRightTime(key)) {
-            setWorkEndTimeSummary(sharedPreferences);
+            setWorkEndTimeSummary();
         }
+    }
+
+    private boolean isRightSalary(String key) {
+        // EditTextPreferenceの取得
+        EditTextPreference editTextPreference = (EditTextPreference)
+                findPreference(key);
+
+        // 入力された値を取得
+        String salary = editTextPreference.getText();
+        if (TextUtils.isEmpty(salary) || Integer.parseInt(salary) < 1) {
+            // Activityを取得
+            Activity activity = getActivity();
+
+            // ActivityがSettingFragmentListenerを実装しているのであれば、トースト表示のため通知
+            if (activity instanceof SettingFragmentListener) {
+                SettingFragmentListener listener = (SettingFragmentListener) activity;
+
+                // Activityにエラー通知
+                listener.onSettingSalaryError();
+            }
+            // 前回入っていた値を取得
+            Preference preference = findPreference(key);
+            String summary = preference.getSummary().toString();
+
+            // EditTextにセット
+            editTextPreference.setText(summary);
+            return false;
+        }
+        return true;
     }
 
     private boolean isRightTime(String key) {
@@ -116,7 +168,8 @@ public class SettingFragment extends PreferenceFragment
         String time = editTextPreference.getText();
 
         // 4桁のみ許容、時間が23まで、分が59まで
-        if(time.length() != 4 || Integer.parseInt(time.substring(0, 2)) > 23 ||
+        if(TextUtils.isEmpty(time) || time.length() != 4 ||
+                Integer.parseInt(time.substring(0, 2)) > 23 ||
                 Integer.parseInt(time.substring(2, 4)) > 59 ) {
             // Activityを取得
             Activity activity = getActivity();
@@ -126,7 +179,7 @@ public class SettingFragment extends PreferenceFragment
                 SettingFragmentListener listener = (SettingFragmentListener) activity;
 
                 // Activityにエラー通知
-                listener.onSettingError();
+                listener.onSettingTimeError();
             }
             // 前回入っていた値を取得
             Preference preference = findPreference(key);
