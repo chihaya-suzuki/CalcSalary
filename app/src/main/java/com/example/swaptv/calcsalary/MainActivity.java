@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import net.nend.android.NendAdView;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -41,6 +43,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 残業中チェックボックス
         mOverTimeCheckBox = (CheckBox) findViewById(R.id.overTimeCheckBox);
         mOverTimeCheckBox.setOnClickListener(this);
+        // 広告View
+        NendAdView nendAdView = (NendAdView) findViewById(R.id.nend);
+        // 広告の取得を開始
+        nendAdView.loadAd();
     }
 
     @Override

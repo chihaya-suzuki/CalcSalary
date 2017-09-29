@@ -1,11 +1,19 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    maven {
+        // nendSDK
+        url 'http://fan-adn.github.io/nendSDK-Android-lib/library'
+    }
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion "26.0.0"
     defaultConfig {
         applicationId "com.example.swaptv.calcsalary"
         minSdkVersion 21
+        //noinspection GradleCompatible
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
@@ -20,10 +28,14 @@ android {
 }
 
 dependencies {
+    // nendSDK
+    compile 'net.nend.android:nend-sdk:3.3.1'
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+    //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:25.4.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
