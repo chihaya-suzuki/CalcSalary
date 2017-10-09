@@ -1,7 +1,13 @@
 package com.example.swaptv.calcsalary;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import net.nend.android.NendAdView;
@@ -19,17 +26,43 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
     private TextView mResultView;
     private TextView mDateView;
     private CheckBox mOverTimeCheckBox;
     private Handler mHandler;
+    private LinearLayout mTwitterArea;
 
     private double mMonthSalary;
     private double mMillSecSalary;
+    private long mNowSalary;
     private long mDateTimeFrom;
     private long mDateTimeTo;
     private long mOverTimeDiff;
+
+    View.OnClickListener mTwitterAreaClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            String messsage= Uri.encode("本日私は現在" + mNowSalary + "円を稼いでいます。 #今いくら？");
+            intent.setData(Uri.parse("twitter://post?message=" + messsage));
+            startActivity(intent);
+        }
+    };
+
+    View.OnClickListener mCheckBoxClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (mOverTimeCheckBox.isChecked())
+                // 残業中なら赤文字
+                mResultView.setTextColor(Color.RED);
+            else {
+                // 通常は黒文字
+                mResultView.setTextColor(Color.BLACK);
+
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +75,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mResultView = (TextView) findViewById(R.id.resultView);
         // 残業中チェックボックス
         mOverTimeCheckBox = (CheckBox) findViewById(R.id.overTimeCheckBox);
-        mOverTimeCheckBox.setOnClickListener(this);
+        mOverTimeCheckBox.setOnClickListener(mCheckBoxClickListener);
+        // Twitterエリア
+        mTwitterArea = (LinearLayout) findViewById(R.id.twitterArea);
+        mTwitterArea.setOnClickListener(mTwitterAreaClickListener);
         // 広告View
         NendAdView nendAdView = (NendAdView) findViewById(R.id.nend);
         // 広告の取得を開始
@@ -60,22 +96,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onResume();
         setTime();
         excuteCalc();
-    }
-
-    @Override
-    public void onClick(View v) {
-        int id = v.getId();
-        switch (id) {
-            case R.id.overTimeCheckBox:
-                if (mOverTimeCheckBox.isChecked())
-                    // 残業中なら赤文字
-                    mResultView.setTextColor(Color.RED);
-                else {
-                    // 通常は黒文字
-                    mResultView.setTextColor(Color.BLACK);
-                }
-                break;
-        }
     }
 
     @Override
@@ -135,10 +155,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 diff = mDateTimeTo - mDateTimeFrom + mOverTimeDiff;
             }
             // ビューに現在給与セット
-            setResultView((long) (diff * mMillSecSalary) + " 円");
+            mNowSalary = (long) (diff * mMillSecSalary);
+            setResultView(mNowSalary + " 円");
         } else {
             // 勤務開始前
             setResultView("0 円");
+            mNowSalary = 0;
         }
     }
 
@@ -220,5 +242,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final DateFormat df = new SimpleDateFormat("yyyy年MM月dd日");
         final Date date = new Date(System.currentTimeMillis());
         mDateView.setText(df.format(date));
+    }
+
+    @SuppressLint("ValidFragment")
+    public class TwitterDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            return new AlertDialog.Builder(getActivity())
+                    .setTitle("Twitterへ投稿")
+                    .setMessage("")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // OK button pressed
+
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+
+            // onPause でダイアログを閉じる場合
+            dismiss();
+        }
     }
 }
